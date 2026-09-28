@@ -1,0 +1,47 @@
+
+==============================================================
+INPUT: Newcastle -> Paradip | 55,000 tons | Supramax
+==============================================================
+
+==============================================================
+1. RATE FORECAST (forecast.py)
+==============================================================
+Last actual index value : 982
+Forecast, day 1         : 976
+Forecast, day 30        : 941 (likely range 736 to 1146)
+Forecast ends on        : 2019-08-30
+
+==============================================================
+2. VESSEL MATCHING (matching.py)
+==============================================================
+Recommended vessel : Supramax
+Compliant options  : ['Supramax', 'Panamax']
+  Rejected Handysize: cargo too large for this vessel type
+  Rejected Capesize: Draft 17m exceeds berth max 16.0m; Draft 17m exceeds berth max 14.5m; Max DWT 220000 exceeds berth max 155000
+
+Distance    : 4,908.7 nm (straight-line estimate)
+Voyage time : 17.0 days at 12 knots
+Loading time    at Newcastle: 5.2 hours (0.22 days) at 10500.0 t/hr
+Discharge time  at Paradip: 13.8 hours (0.57 days) at 4000 t/hr
+
+==============================================================
+3. ADVICE AND RISK (risk.py)
+==============================================================
+Supramax: Lean towards waiting. Rates are expected to fall by about 3.5% over the next 30 days.
+What to do : Rates may ease a little. If your cargo date is flexible, waiting could save some cost.
+Caution    : This is a forecast based on past data, not a guarantee. It gets less certain the further ahead it looks.
+
+Risk alert : Supramax rates projected falling by 3.5% over the next 30 days. Risk level: Stable.
+Idle advice: No repositioning action indicated - the forecast change for Supramax is too small to justify moving the vessel.
+Congestion at Paradip: Low (simulated)
+
+Coal price (2019-07): $72.08/tonne, falling (-16.9% over 3 months, -39.7% over 12 months)
+Estimated cargo value: $3,964,400
+
+==============================================================
+4. CHARTER TIMING FOR ALL FOUR VESSEL TYPES
+==============================================================
+Handysize: Lean towards waiting. Rates are expected to fall by about 6.1% over the next 30 days.
+Supramax: Lean towards waiting. Rates are expected to fall by about 3.5% over the next 30 days.
+Panamax: Lean towards waiting. Rates are expected to fall by about 5.8% over the next 30 days.
+Capesize: No clear signal. Rates are expected to stay roughly flat (-0.8%) over the next 30 days.
