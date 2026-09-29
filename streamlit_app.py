@@ -29,19 +29,31 @@ def run_analysis(origin, destination, cargo_tons, days):
 
 
 def extract_port_name(raw):
+    if not raw:
+        return ""
     parts = raw.replace("\t", "-").split("-")
     return parts[0].strip()
 
 
 st.title("Freight Forecasting & Prediction 🗺️")
 
-# STEP 1: Define tabs right after title
-tab1, tab2 = st.tabs(["📋 Input", "📊 Results"])
+# Initialize active tab in session state if not already set
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "📋 Input"
+
+# Top Navigation (acts like tabs, state-controlled)
+active_tab = st.radio(
+    "Navigation",
+    options=["📋 Input", "📊 Results"],
+    horizontal=True,
+    key="active_tab",
+    label_visibility="collapsed"
+)
 
 # =========================================================
-# STEP 2: Wrap both existing forms inside `with tab1:`
+# TAB 1: INPUT FORM
 # =========================================================
-with tab1:
+if active_tab == "📋 Input":
     with st.form("cargo_detail"):
         st.header("Cargo Details", divider="red")
         st.radio(
@@ -49,7 +61,7 @@ with tab1:
             ["PRIMARY COKING COAL", "MEDIUM COKING COAL", "WEAK COKING COAL", "PCL COAL", "THERMAL COAL"],
             key="cargo_type",
         )
-        cargo_qt = st.number_input("Volume of shipment", 1000, 80000, 10000, key="cargo_qt")
+        cargo_qt = st.number_input("Volume of shipment", 1000, 500000, 10000, key="cargo_qt")
         submitted = st.form_submit_button("Submit", type="primary", disabled=False)
         if submitted:
             st.write(
@@ -66,13 +78,13 @@ with tab1:
             st.selectbox(
                 "The following ports provide PRIMARY COKING COAL",
                 ("Abbot Point-Australia-Adani Abbot Point Terminal — Berth 1",
-    "Abbot Point-Australia-Adani Abbot Point Terminal — Berth 2",
-    "Beira-Mozambique-Berth 8 — Coal Terminal (TCC8)",
-    "Taman-Russia-Berth No. 1", "Taman-Russia-Berth No. 4",
-    "Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 01",
-    "Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 02",
-    "Baltimore-USA-CONSOL Marine Terminal",
-    "Lamberts Point / Norfolk-USA-Pier 6 — Lamberts Point Coal Terminal",
+                 "Abbot Point-Australia-Adani Abbot Point Terminal — Berth 2",
+                 "Beira-Mozambique-Berth 8 — Coal Terminal (TCC8)",
+                 "Taman-Russia-Berth No. 1", "Taman-Russia-Berth No. 4",
+                 "Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 01",
+                 "Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 02",
+                 "Baltimore-USA-CONSOL Marine Terminal",
+                 "Lamberts Point / Norfolk-USA-Pier 6 — Lamberts Point Coal Terminal",
                 ),
                 key="origin_pt",
             )
@@ -227,25 +239,10 @@ with tab1:
         st.selectbox("Choose contract duration", ["short term", "mid term"], key="contract_duration")
         submitted1 = st.form_submit_button("Submit", type="primary", disabled=False)
 
-    # STEP 4: Reminder prompt inside tab1
-    if submitted1:
-        st.success("Analysis complete — click the **📊 Results** tab above to view it.")
-
-# =========================================================
-# STEP 3: Wrap backend execution and results inside `with tab2:`
-# =========================================================
-with tab2:
     if submitted1:
         origin_name = extract_port_name(st.session_state.origin_pt)
         dest_name = extract_port_name(st.session_state.destination_pt)
         days = 30 if st.session_state.contract_duration == "short term" else 90
-
-        st.write(
-            f"You have chosen :blue-background[{st.session_state.cargo_type}] "
-            f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne, "
-            f"from :blue-background[{origin_name}] to :blue-background[{dest_name}] "
-            f"for a :blue-background[{st.session_state.contract_duration}] contract duration."
-        )
 
         try:
             st.session_state["result"] = run_analysis(
@@ -255,10 +252,25 @@ with tab2:
             st.error(str(e))
             st.session_state["result"] = None
 
+        # Automatically switch to Results view and rerun page
+        st.session_state.active_tab = "📊 Results"
+        st.rerun()
+
+# =========================================================
+# TAB 2: RESULTS VIEW
+# =========================================================
+if active_tab == "📊 Results":
     result = st.session_state.get("result")
     if result:
-        # Extract dest_name from session_state if available so it's defined on all reruns
         dest_name = extract_port_name(st.session_state.get("destination_pt", ""))
+        origin_name = extract_port_name(st.session_state.get("origin_pt", ""))
+
+        st.write(
+            f"You have chosen :blue-background[{st.session_state.cargo_type}] "
+            f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne, "
+            f"from :blue-background[{origin_name}] to :blue-background[{dest_name}] "
+            f"for a :blue-background[{st.session_state.contract_duration}] contract duration."
+        )
 
         if result["vessel"] is None:
             st.warning("No single vessel type fits this cargo and port pair.")
