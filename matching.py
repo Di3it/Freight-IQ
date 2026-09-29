@@ -58,14 +58,13 @@ def _load_port_row(port_name: str, is_origin: bool):
 
 
 def _port_is_compliant(port_row, vessel_type):
-    """Checks whether a given vessel type's typical dimensions fit within a specific berth's limits."""
     specs = VESSEL_SPECS[vessel_type]
     reasons = []
 
-    max_loa = port_row.get("Max_LOA_m")
-    max_beam = port_row.get("Max_Beam_m")
-    max_draft = port_row.get("Max_Draft_m")
-    max_dwt = port_row.get("Max_DWT")
+    max_loa = pd.to_numeric(port_row.get("Max_LOA_m"), errors="coerce")
+    max_beam = pd.to_numeric(port_row.get("Max_Beam_m"), errors="coerce")
+    max_draft = pd.to_numeric(port_row.get("Max_Draft_m"), errors="coerce")
+    max_dwt = pd.to_numeric(port_row.get("Max_DWT"), errors="coerce")
 
     if pd.notna(max_loa) and specs["typical_loa_m"] > max_loa:
         reasons.append(f"LOA {specs['typical_loa_m']}m exceeds berth max {max_loa}m")
@@ -77,7 +76,6 @@ def _port_is_compliant(port_row, vessel_type):
         reasons.append(f"Max DWT {specs['dwt_max']} exceeds berth max {max_dwt}")
 
     return (len(reasons) == 0), reasons
-
 
 def match_vessel(origin_port: str, destination_port: str, cargo_tons: float):
     """
