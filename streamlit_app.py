@@ -37,11 +37,11 @@ def extract_port_name(raw):
 
 st.title("Freight Forecasting & Prediction 🗺️")
 
-# Initialize active tab in session state if not already set
+# Initialize session state for navigation if not set
 if "active_tab" not in st.session_state:
     st.session_state.active_tab = "📋 Input"
 
-# Top Navigation (acts like tabs, state-controlled)
+# RENDER TOP NAVIGATION WIDGET
 active_tab = st.radio(
     "Navigation",
     options=["📋 Input", "📊 Results"],
@@ -252,9 +252,13 @@ if active_tab == "📋 Input":
             st.error(str(e))
             st.session_state["result"] = None
 
-        # Automatically switch to Results view and rerun page
-        st.session_state.active_tab = "📊 Results"
+        # Update a separate target variable and rerun cleanly
+        st.session_state["target_tab"] = "📊 Results"
         st.rerun()
+
+# Apply requested tab switch from submit click BEFORE next render frame
+if "target_tab" in st.session_state:
+    st.session_state.active_tab = st.session_state.pop("target_tab")
 
 # =========================================================
 # TAB 2: RESULTS VIEW
