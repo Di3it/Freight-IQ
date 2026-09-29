@@ -200,7 +200,10 @@ def calculate_distance_nm(origin_port: str, destination_port: str):
     distance_nm = distance_km * 0.539957  # km to nautical miles
 
     return round(distance_nm, 1)
-
+def get_port_lists():
+    origin = _read_ports(ORIGIN_PORTS_PATH)["Port_Name"].dropna().unique().tolist()
+    india = _read_ports(INDIA_PORTS_PATH)["Port_Name"].dropna().unique().tolist()
+    return origin, india
 
 def estimate_voyage_time(origin_port: str, destination_port: str):
     """
