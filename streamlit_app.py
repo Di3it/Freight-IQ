@@ -35,6 +35,9 @@ def extract_port_name(raw):
     return parts[0].strip()
 
 
+# Set wide page layout to give maximum side-by-side space
+st.set_page_config(page_title="Freight Forecasting", layout="wide")
+
 st.title("Freight Forecasting & Prediction 🗺️")
 
 # ---------------------------------------------------------
@@ -264,7 +267,7 @@ if active_tab == "📋 Input":
         st.rerun()
 
 # =========================================================
-# TAB 2: RESULTS VIEW
+# TAB 2: RESULTS VIEW (COMPACT SIDE-BY-SIDE DASHBOARD)
 # =========================================================
 if active_tab == "📊 Results":
     result = st.session_state.get("result")
@@ -272,56 +275,65 @@ if active_tab == "📊 Results":
         dest_name = extract_port_name(st.session_state.get("destination_pt", ""))
         origin_name = extract_port_name(st.session_state.get("origin_pt", ""))
 
-        st.write(
-            f"You have chosen :blue-background[{st.session_state.cargo_type}] "
-            f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne, "
-            f"from :blue-background[{origin_name}] to :blue-background[{dest_name}] "
-            f"for a :blue-background[{st.session_state.contract_duration}] contract duration."
+        # Top summary bar
+        st.info(
+            f"**Cargo:** {st.session_state.cargo_type} | "
+            f"**Volume:** {st.session_state.cargo_qt:,} MT | "
+            f"**Route:** {origin_name} ➔ {dest_name} | "
+            f"**Duration:** {st.session_state.contract_duration}"
         )
 
         if result["vessel"] is None:
             st.warning("No single vessel type fits this cargo and port pair.")
         else:
-            st.subheader(f"Recommended vessel: {result['vessel']}")
-            st.write("Other compliant options:", result["match"]["compliant_options"])
+            # Side-by-side Layout
+            col1, col2 = st.columns([1, 1], gap="medium")
 
-            st.subheader("Charter Timing")
-            st.write(result["charter"]["headline"])
-            st.write(result["charter"]["action"])
-            st.caption(result["charter"]["caution"])
+            with col1:
+                st.subheader("🚢 Vessel & Voyage")
+                
+                # Metric Cards
+                m1, m2, m3 = st.columns(3)
+                m1.metric("Recommended Vessel", result['vessel'])
+                m2.metric("Distance", f"{result['voyage']['distance_nm']:,} nm")
+                m3.metric("Voyage Time", f"{result['voyage']['voyage_time_days']} days")
 
-            st.subheader("Voyage")
-            st.write(
-                f"Distance: {result['voyage']['distance_nm']:,} nm "
-                f"({result['voyage']['voyage_time_days']} days at "
-                f"{result['voyage']['assumed_speed_knots']} knots)"
-            )
-            st.caption("Straight-line distance estimate, not the actual sailed route.")
+                st.caption(f"**Other options:** {', '.join(result['match']['compliant_options'])}")
+                
+                load_hrs = result["load"]["turnaround_hours"]
+                discharge_hrs = result["discharge"]["turnaround_hours"]
+                st.write(
+                    f"**Turnaround:** Load ({origin_name}): **{load_hrs or 'N/A'} hrs** | "
+                    f"Discharge ({dest_name}): **{discharge_hrs or 'N/A'} hrs**"
+                )
 
-            load_hrs = result["load"]["turnaround_hours"]
-            discharge_hrs = result["discharge"]["turnaround_hours"]
-            st.write(f"Loading time at origin: {load_hrs if load_hrs is not None else 'data not available'} hours")
-            st.write(f"Discharge time at destination: {discharge_hrs if discharge_hrs is not None else 'data not available'} hours")
+                st.divider()
 
-            st.subheader("Risk & Idle Management")
-            st.write(result["risk"]["message"])
-            st.write("Idle management:", result["idle"]["suggestion"])
-            st.write(f"Port congestion at {dest_name}: {result['congestion']['congestion_level']}")
-            st.caption("Congestion is simulated for this demo.")
+                st.subheader("📈 Rate Forecast")
+                chart_data = result["forecast"]["forecast"].set_index("Date")[
+                    ["Forecast", "Lower_Bound", "Upper_Bound"]
+                ]
+                st.line_chart(chart_data, height=220)
 
-            st.subheader("Coal Price Context")
-            st.write(
-                f"${result['coal']['latest_price_usd_per_tonne']}/tonne as of "
-                f"{result['coal']['as_of']} ({result['coal']['direction']}, "
-                f"{result['coal']['change_3m_pct']}% over 3 months)"
-            )
-            st.write(f"Estimated cargo value: ${result['coal']['estimated_cargo_value_usd']:,}")
+            with col2:
+                st.subheader("⏱️ Charter & Market Context")
+                
+                st.success(f"**Action:** {result['charter']['headline']} - {result['charter']['action']}")
+                
+                m4, m5 = st.columns(2)
+                m4.metric(
+                    label="Coal Price",
+                    value=f"${result['coal']['latest_price_usd_per_tonne']}/MT",
+                    delta=f"{result['coal']['change_3m_pct']}% (3m)"
+                )
+                m5.metric("Est. Cargo Value", f"${result['coal']['estimated_cargo_value_usd']:,}")
 
-            st.subheader("Rate Forecast")
-            chart_data = result["forecast"]["forecast"].set_index("Date")[
-                ["Forecast", "Lower_Bound", "Upper_Bound"]
-            ]
-            st.line_chart(chart_data)
-            st.caption("Market data ends July 2019. Forecast dates shown continue from there.")
+                st.divider()
+
+                st.subheader("⚠️ Risk & Port Congestion")
+                st.write(f"• **Risk Alert:** {result['risk']['message']}")
+                st.write(f"• **Idle Strategy:** {result['idle']['suggestion']}")
+                st.write(f"• **Port Congestion at {dest_name}:** `{result['congestion']['congestion_level']}`")
+
     else:
         st.info("Fill in the Input tab and submit to see your results here.")
