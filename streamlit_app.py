@@ -35,254 +35,271 @@ def extract_port_name(raw):
 
 st.title("Freight Forecasting & Prediction 🗺️")
 
-with st.form("cargo_detail"):
-    st.header("Cargo Details", divider="red")
-    st.radio(
-        "Choose the required cargo you want to look for 🏗️.",
-        ["PRIMARY COKING COAL", "MEDIUM COKING COAL", "WEAK COKING COAL", "PCL COAL", "THERMAL COAL"],
-        key="cargo_type",
-    )
-    cargo_qt = st.number_input("Volume of shipment", 1000, 500000, 10000, key="cargo_qt")
-    submitted = st.form_submit_button("Submit", type="primary", disabled=False)
-    if submitted:
+# STEP 1: Define tabs right after title
+tab1, tab2 = st.tabs(["📋 Input", "📊 Results"])
+
+# =========================================================
+# STEP 2: Wrap both existing forms inside `with tab1:`
+# =========================================================
+with tab1:
+    with st.form("cargo_detail"):
+        st.header("Cargo Details", divider="red")
+        st.radio(
+            "Choose the required cargo you want to look for 🏗️.",
+            ["PRIMARY COKING COAL", "MEDIUM COKING COAL", "WEAK COKING COAL", "PCL COAL", "THERMAL COAL"],
+            key="cargo_type",
+        )
+        cargo_qt = st.number_input("Volume of shipment", 1000, 500000, 10000, key="cargo_qt")
+        submitted = st.form_submit_button("Submit", type="primary", disabled=False)
+        if submitted:
+            st.write(
+                f"You have chosen :blue-background[{st.session_state.cargo_type}] "
+                f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne."
+            )
+
+    with st.form("shipping_details"):
+        st.header("Voyage Details", divider="red")
+        st.subheader("Choose your preferred ")
+        st.subheader("1. Origin Port")
+
+        if st.session_state.cargo_type == "PRIMARY COKING COAL":
+            st.selectbox(
+                "The following ports provide PRIMARY COKING COAL",
+                ("Abbot Point-Australia-Adani Abbot Point Terminal — Berth 1",
+    "Abbot Point-Australia-Adani Abbot Point Terminal — Berth 2",
+    "Beira-Mozambique-Berth 8 — Coal Terminal (TCC8)",
+    "Taman-Russia-Berth No. 1", "Taman-Russia-Berth No. 4",
+    "Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 01",
+    "Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 02",
+    "Baltimore-USA-CONSOL Marine Terminal",
+    "Lamberts Point / Norfolk-USA-Pier 6 — Lamberts Point Coal Terminal",
+                ),
+                key="origin_pt",
+            )
+        elif st.session_state.cargo_type == "MEDIUM COKING COAL":
+            st.selectbox(
+                "The following ports provide MEDIUM COKING COAL",
+                (
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
+                    "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
+                    "Taman\tRussia\tBerth No. 1",
+                    "Taman\tRussia\tBerth No. 3",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
+                    "Baltimore\tUSA\tCONSOL Marine Terminal",
+                    "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
+                ),
+                key="origin_pt",
+            )
+        elif st.session_state.cargo_type == "WEAK COKING COAL":
+            st.selectbox(
+                "The following ports provide WEAK COKING COAL",
+                (
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
+                    "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
+                    "Taman\tRussia\tBerth No. 1",
+                    "Taman\tRussia\tBerth No. 3",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
+                    "Baltimore\tUSA\tCONSOL Marine Terminal",
+                    "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
+                ),
+                key="origin_pt",
+            )
+        elif st.session_state.cargo_type == "PCL COAL":
+            st.selectbox(
+                "The following ports provide PCL COAL",
+                (
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
+                    "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
+                    "Taboneo\tIndonesia\tTaboneo Anchorage (ship-to-ship coal loading)",
+                    "Tanjung Bara\tIndonesia\tTanjung Bara Coal Terminal — Deepwater Berth",
+                    "Taman\tRussia\tBerth No. 1",
+                    "Taman\tRussia\tBerth No. 3",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
+                    "Baltimore\tUSA\tCONSOL Marine Terminal",
+                    "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
+                ),
+                key="origin_pt",
+            )
+        elif st.session_state.cargo_type == "THERMAL COAL":
+            st.selectbox(
+                "The following ports provide THERMAL COAL",
+                (
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
+                    "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
+                    "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
+                    "Taboneo\tIndonesia\tTaboneo Anchorage (ship-to-ship coal loading)",
+                    "Tanjung Bara\tIndonesia\tTanjung Bara Coal Terminal — Deepwater Berth",
+                    "Beira\tMozambique\tBerth 8 — Coal Terminal (TCC8)",
+                    "Maputo / Matola\tMozambique\tMatola Coal Terminal (TCM)",
+                    "Taman\tRussia\tBerth No. 1",
+                    "Taman\tRussia\tBerth No. 3",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
+                    "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
+                    "Baltimore\tUSA\tCONSOL Marine Terminal",
+                    "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
+                ),
+                key="origin_pt",
+            )
+
+        st.subheader("2. Destination Port")
+
+        if st.session_state.cargo_type == "PRIMARY COKING COAL":
+            st.selectbox(
+                "The following ports can import PRIMARY COKING COAL",
+                (
+                    "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
+                    "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
+                    "Vizag\tIndia\tWQ-2 / WQ-3",
+                    "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
+                    "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
+                    "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
+                    "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
+                ),
+                key="destination_pt",
+            )
+        elif st.session_state.cargo_type == "MEDIUM COKING COAL":
+            st.selectbox(
+                "The following ports can import MEDIUM COKING COAL",
+                (
+                    "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
+                    "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
+                    "Vizag\tIndia\tWQ-2 / WQ-3",
+                    "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
+                    "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
+                    "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
+                    "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
+                ),
+                key="destination_pt",
+            )
+        elif st.session_state.cargo_type == "WEAK COKING COAL":
+            st.selectbox(
+                "The following ports can import WEAK COKING COAL",
+                (
+                    "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
+                    "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
+                    "Vizag\tIndia\tWQ-2 / WQ-3",
+                    "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
+                    "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
+                    "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
+                    "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
+                ),
+                key="destination_pt",
+            )
+        elif st.session_state.cargo_type == "PCL COAL":
+            st.selectbox(
+                "The following ports can import PCL COAL",
+                (
+                    "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
+                    "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
+                    "Vizag\tIndia\tWQ-2 / WQ-3",
+                    "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
+                    "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
+                    "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
+                    "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
+                ),
+                key="destination_pt",
+            )
+        elif st.session_state.cargo_type == "THERMAL COAL":
+            st.selectbox(
+                "The following ports can import THERMAL COAL",
+                (
+                    "Paradip\tIndia\tBerth No. 05  Coal Berth-01",
+                    "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 Coastal Coal Handling",
+                    "Paradip\tIndia\tBerth No. 06 Coal Berth-02",
+                    "Vizag\tIndia\tVGCB  Vizag General Cargo Berth",
+                    "Vizag\tIndia\tWQ-2 / WQ-3",
+                    "Gangavaram\tIndia\tMechanised Coal Berths 2 berths",
+                    "Dhamra\tIndia\tBB-1 / BB-2  Mechanised Bulk Import Berths",
+                    "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
+                    "Haldia\tIndia\tBerth No. 3  Mechanical Thermal Coal Handling Facility",
+                ),
+                key="destination_pt",
+            )
+
+        st.subheader("3. Contract Duration")
+        st.text("Select the contract duration for your shipment")
+        st.selectbox("Choose contract duration", ["short term", "mid term"], key="contract_duration")
+        submitted1 = st.form_submit_button("Submit", type="primary", disabled=False)
+
+    # STEP 4: Reminder prompt inside tab1
+    if submitted1:
+        st.success("Analysis complete — click the **📊 Results** tab above to view it.")
+
+# =========================================================
+# STEP 3: Wrap backend execution and results inside `with tab2:`
+# =========================================================
+with tab2:
+    if submitted1:
+        origin_name = extract_port_name(st.session_state.origin_pt)
+        dest_name = extract_port_name(st.session_state.destination_pt)
+        days = 30 if st.session_state.contract_duration == "short term" else 90
+
         st.write(
             f"You have chosen :blue-background[{st.session_state.cargo_type}] "
-            f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne."
+            f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne, "
+            f"from :blue-background[{origin_name}] to :blue-background[{dest_name}] "
+            f"for a :blue-background[{st.session_state.contract_duration}] contract duration."
         )
 
-with st.form("shipping_details"):
-    st.header("Voyage Details", divider="red")
-    st.subheader("Choose your preferred ")
-    st.subheader("1. Origin Port")
+        try:
+            st.session_state["result"] = run_analysis(
+                origin_name, dest_name, st.session_state.cargo_qt, days
+            )
+        except ValueError as e:
+            st.error(str(e))
+            st.session_state["result"] = None
 
-    if st.session_state.cargo_type == "PRIMARY COKING COAL":
-        st.selectbox(
-            "The following ports provide PRIMARY COKING COAL",
-            ("Abbot Point-Australia-Adani Abbot Point Terminal — Berth 1",
-"Abbot Point-Australia-Adani Abbot Point Terminal — Berth 2",
-"Beira-Mozambique-Berth 8 — Coal Terminal (TCC8)",
-"Taman-Russia-Berth No. 1", "Taman-Russia-Berth No. 4",
-"Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 01",
-"Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 02",
-"Baltimore-USA-CONSOL Marine Terminal",
-"Lamberts Point / Norfolk-USA-Pier 6 — Lamberts Point Coal Terminal",
-            ),
-            key="origin_pt",
-        )
-    elif st.session_state.cargo_type == "MEDIUM COKING COAL":
-        st.selectbox(
-            "The following ports provide MEDIUM COKING COAL",
-            (
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
-                "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
-                "Taman\tRussia\tBerth No. 1",
-                "Taman\tRussia\tBerth No. 3",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
-                "Baltimore\tUSA\tCONSOL Marine Terminal",
-                "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
-            ),
-            key="origin_pt",
-        )
-    elif st.session_state.cargo_type == "WEAK COKING COAL":
-        st.selectbox(
-            "The following ports provide WEAK COKING COAL",
-            (
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
-                "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
-                "Taman\tRussia\tBerth No. 1",
-                "Taman\tRussia\tBerth No. 3",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
-                "Baltimore\tUSA\tCONSOL Marine Terminal",
-                "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
-            ),
-            key="origin_pt",
-        )
-    elif st.session_state.cargo_type == "PCL COAL":
-        st.selectbox(
-            "The following ports provide PCL COAL",
-            (
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
-                "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
-                "Taboneo\tIndonesia\tTaboneo Anchorage (ship-to-ship coal loading)",
-                "Tanjung Bara\tIndonesia\tTanjung Bara Coal Terminal — Deepwater Berth",
-                "Taman\tRussia\tBerth No. 1",
-                "Taman\tRussia\tBerth No. 3",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
-                "Baltimore\tUSA\tCONSOL Marine Terminal",
-                "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
-            ),
-            key="origin_pt",
-        )
-    elif st.session_state.cargo_type == "THERMAL COAL":
-        st.selectbox(
-            "The following ports provide THERMAL COAL",
-            (
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 1",
-                "Abbot Point\tAustralia\tAdani Abbot Point Terminal — Berth 2",
-                "Newcastle\tAustralia\tKooragang 8, 9 & 10 (NCIG Coal Export Terminal)",
-                "Taboneo\tIndonesia\tTaboneo Anchorage (ship-to-ship coal loading)",
-                "Tanjung Bara\tIndonesia\tTanjung Bara Coal Terminal — Deepwater Berth",
-                "Beira\tMozambique\tBerth 8 — Coal Terminal (TCC8)",
-                "Maputo / Matola\tMozambique\tMatola Coal Terminal (TCM)",
-                "Taman\tRussia\tBerth No. 1",
-                "Taman\tRussia\tBerth No. 3",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 01",
-                "Vanino\tRussia\tVaninoTransUgol Coal Terminal — Berth 02",
-                "Baltimore\tUSA\tCONSOL Marine Terminal",
-                "Lamberts Point / Norfolk\tUSA\tPier 6 — Lamberts Point Coal Terminal",
-            ),
-            key="origin_pt",
-        )
+    result = st.session_state.get("result")
+    if result:
+        if result["vessel"] is None:
+            st.warning("No single vessel type fits this cargo and port pair.")
+        else:
+            st.subheader(f"Recommended vessel: {result['vessel']}")
+            st.write("Other compliant options:", result["match"]["compliant_options"])
 
-    st.subheader("2. Destination Port")
+            st.subheader("Charter Timing")
+            st.write(result["charter"]["headline"])
+            st.write(result["charter"]["action"])
+            st.caption(result["charter"]["caution"])
 
-    if st.session_state.cargo_type == "PRIMARY COKING COAL":
-        st.selectbox(
-            "The following ports can import PRIMARY COKING COAL",
-            (
-                "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
-                "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
-                "Vizag\tIndia\tWQ-2 / WQ-3",
-                "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
-                "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
-                "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
-                "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
-            ),
-            key="destination_pt",
-        )
-    elif st.session_state.cargo_type == "MEDIUM COKING COAL":
-        st.selectbox(
-            "The following ports can import MEDIUM COKING COAL",
-            (
-                "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
-                "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
-                "Vizag\tIndia\tWQ-2 / WQ-3",
-                "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
-                "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
-                "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
-                "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
-            ),
-            key="destination_pt",
-        )
-    elif st.session_state.cargo_type == "WEAK COKING COAL":
-        st.selectbox(
-            "The following ports can import WEAK COKING COAL",
-            (
-                "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
-                "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
-                "Vizag\tIndia\tWQ-2 / WQ-3",
-                "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
-                "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
-                "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
-                "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
-            ),
-            key="destination_pt",
-        )
-    elif st.session_state.cargo_type == "PCL COAL":
-        st.selectbox(
-            "The following ports can import PCL COAL",
-            (
-                "Paradip\tIndia\tBerth No. 03 - New Coal Import Berth",
-                "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 - Coastal Coal Handling",
-                "Vizag\tIndia\tWQ-2 / WQ-3",
-                "Dhamra\tIndia\tBB-1 / BB-2 - Mechanised Bulk Import Berths",
-                "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
-                "Haldia\tIndia\tBerth No. 1 - Multipurpose Dry Bulk",
-                "Haldia\tIndia\tBerth No. 2 - Multipurpose Dry Bulk",
-            ),
-            key="destination_pt",
-        )
-    elif st.session_state.cargo_type == "THERMAL COAL":
-        st.selectbox(
-            "The following ports can import THERMAL COAL",
-            (
-                "Paradip\tIndia\tBerth No. 05  Coal Berth-01",
-                "Gopalpur\tIndia\tBerth Nos. 1, 2 & 3 Coastal Coal Handling",
-                "Paradip\tIndia\tBerth No. 06 Coal Berth-02",
-                "Vizag\tIndia\tVGCB  Vizag General Cargo Berth",
-                "Vizag\tIndia\tWQ-2 / WQ-3",
-                "Gangavaram\tIndia\tMechanised Coal Berths 2 berths",
-                "Dhamra\tIndia\tBB-1 / BB-2  Mechanised Bulk Import Berths",
-                "Sagar-Sandheads\tIndia\tSagar Anchorage / Sandheads Lighterage Point",
-                "Haldia\tIndia\tBerth No. 3  Mechanical Thermal Coal Handling Facility",
-            ),
-            key="destination_pt",
-        )
+            st.subheader("Voyage")
+            st.write(
+                f"Distance: {result['voyage']['distance_nm']:,} nm "
+                f"({result['voyage']['voyage_time_days']} days at "
+                f"{result['voyage']['assumed_speed_knots']} knots)"
+            )
+            st.caption("Straight-line distance estimate, not the actual sailed route.")
 
-    st.subheader("3. Contract Duration")
-    st.text("Select the contract duration for your shipment")
-    st.selectbox("Choose contract duration", ["short term", "mid term"], key="contract_duration")
-    submitted1 = st.form_submit_button("Submit", type="primary", disabled=False)
+            load_hrs = result["load"]["turnaround_hours"]
+            discharge_hrs = result["discharge"]["turnaround_hours"]
+            st.write(f"Loading time at origin: {load_hrs if load_hrs is not None else 'data not available'} hours")
+            st.write(f"Discharge time at destination: {discharge_hrs if discharge_hrs is not None else 'data not available'} hours")
 
-if submitted1:
-    origin_name = extract_port_name(st.session_state.origin_pt)
-    dest_name = extract_port_name(st.session_state.destination_pt)
-    days = 30 if st.session_state.contract_duration == "short term" else 90
+            st.subheader("Risk & Idle Management")
+            st.write(result["risk"]["message"])
+            st.write("Idle management:", result["idle"]["suggestion"])
+            st.write(f"Port congestion at {dest_name}: {result['congestion']['congestion_level']}")
+            st.caption("Congestion is simulated for this demo.")
 
-    st.write(
-        f"You have chosen :blue-background[{st.session_state.cargo_type}] "
-        f"of volume :blue-background[{str(st.session_state.cargo_qt)}] Metric tonne, "
-        f"from :blue-background[{origin_name}] to :blue-background[{dest_name}] "
-        f"for a :blue-background[{st.session_state.contract_duration}] contract duration."
-    )
+            st.subheader("Coal Price Context")
+            st.write(
+                f"${result['coal']['latest_price_usd_per_tonne']}/tonne as of "
+                f"{result['coal']['as_of']} ({result['coal']['direction']}, "
+                f"{result['coal']['change_3m_pct']}% over 3 months)"
+            )
+            st.write(f"Estimated cargo value: ${result['coal']['estimated_cargo_value_usd']:,}")
 
-    try:
-        st.session_state["result"] = run_analysis(
-            origin_name, dest_name, st.session_state.cargo_qt, days
-        )
-    except ValueError as e:
-        st.error(str(e))
-        st.session_state["result"] = None
-
-result = st.session_state.get("result")
-if result:
-    if result["vessel"] is None:
-        st.warning("No single vessel type fits this cargo and port pair.")
+            st.subheader("Rate Forecast")
+            chart_data = result["forecast"]["forecast"].set_index("Date")[
+                ["Forecast", "Lower_Bound", "Upper_Bound"]
+            ]
+            st.line_chart(chart_data)
+            st.caption("Market data ends July 2019. Forecast dates shown continue from there.")
     else:
-        st.subheader(f"Recommended vessel: {result['vessel']}")
-        st.write("Other compliant options:", result["match"]["compliant_options"])
-
-        st.subheader("Charter Timing")
-        st.write(result["charter"]["headline"])
-        st.write(result["charter"]["action"])
-        st.caption(result["charter"]["caution"])
-
-        st.subheader("Voyage")
-        st.write(
-            f"Distance: {result['voyage']['distance_nm']:,} nm "
-            f"({result['voyage']['voyage_time_days']} days at "
-            f"{result['voyage']['assumed_speed_knots']} knots)"
-        )
-        st.caption("Straight-line distance estimate, not the actual sailed route.")
-
-        load_hrs = result["load"]["turnaround_hours"]
-        discharge_hrs = result["discharge"]["turnaround_hours"]
-        st.write(f"Loading time at origin: {load_hrs if load_hrs is not None else 'data not available'} hours")
-        st.write(f"Discharge time at destination: {discharge_hrs if discharge_hrs is not None else 'data not available'} hours")
-
-        st.subheader("Risk & Idle Management")
-        st.write(result["risk"]["message"])
-        st.write("Idle management:", result["idle"]["suggestion"])
-        st.write(f"Port congestion at {dest_name}: {result['congestion']['congestion_level']}")
-        st.caption("Congestion is simulated for this demo.")
-
-        st.subheader("Coal Price Context")
-        st.write(
-            f"${result['coal']['latest_price_usd_per_tonne']}/tonne as of "
-            f"{result['coal']['as_of']} ({result['coal']['direction']}, "
-            f"{result['coal']['change_3m_pct']}% over 3 months)"
-        )
-        st.write(f"Estimated cargo value: ${result['coal']['estimated_cargo_value_usd']:,}")
-
-        st.subheader("Rate Forecast")
-        chart_data = result["forecast"]["forecast"].set_index("Date")[
-            ["Forecast", "Lower_Bound", "Upper_Bound"]
-        ]
-        st.line_chart(chart_data)
-        st.caption("Market data ends July 2019. Forecast dates shown continue from there.")
+        st.info("Fill in the Input tab and submit to see your results here.")
