@@ -257,6 +257,9 @@ with tab2:
 
     result = st.session_state.get("result")
     if result:
+        # Extract dest_name from session_state if available so it's defined on all reruns
+        dest_name = extract_port_name(st.session_state.get("destination_pt", ""))
+
         if result["vessel"] is None:
             st.warning("No single vessel type fits this cargo and port pair.")
         else:
