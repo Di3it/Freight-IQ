@@ -220,7 +220,7 @@ with st.form("shipping_details"):
 
     st.subheader("3. Contract Duration")
     st.text("Select the contract duration for your shipment")
-    st.selectbox("", ("short term", "mid term"), key="contract_duration")
+    st.selectbox("Choose contract duration", ["short term", "mid term"], key="contract_duration")
     submitted1 = st.form_submit_button("Submit", type="primary", disabled=False)
 
 if submitted1:
