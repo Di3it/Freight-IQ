@@ -29,10 +29,8 @@ def run_analysis(origin, destination, cargo_tons, days):
 
 
 def extract_port_name(raw):
-    """Pulls the plain port name out of the dropdown label, which uses two
-    different formats ('Country-Port-Berth' and 'Port<TAB>Country<TAB>Berth')."""
     parts = raw.replace("\t", "-").split("-")
-    return parts[1].strip() if len(parts) > 2 else parts[0].strip()
+    return parts[0].strip()
 
 
 st.title("Freight Forecasting & Prediction 🗺️")
@@ -60,15 +58,14 @@ with st.form("shipping_details"):
     if st.session_state.cargo_type == "PRIMARY COKING COAL":
         st.selectbox(
             "The following ports provide PRIMARY COKING COAL",
-            (
-                "Australia-Adani Abbot Point Terminal — Berth 1",
-                "Australia-Adani Abbot Point Terminal — Berth 2",
-                "Mozambique-Beira-Berth 8 — Coal Terminal (TCC8)",
-                "Russia-Taman-Berth No. 1", "Russia-Taman-Berth No. 4",
-                "Russia-Vanino-VaninoTransUgol Coal Terminal — Berth 01",
-                "Russia-Vanino-VaninoTransUgol Coal Terminal — Berth 02",
-                "USA-Baltimore-CONSOL Marine Terminal",
-                "USA-Lamberts Point / Norfolk-Pier 6 — Lamberts Point Coal Terminal",
+            ("Abbot Point-Australia-Adani Abbot Point Terminal — Berth 1",
+"Abbot Point-Australia-Adani Abbot Point Terminal — Berth 2",
+"Beira-Mozambique-Berth 8 — Coal Terminal (TCC8)",
+"Taman-Russia-Berth No. 1", "Taman-Russia-Berth No. 4",
+"Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 01",
+"Vanino-Russia-VaninoTransUgol Coal Terminal — Berth 02",
+"Baltimore-USA-CONSOL Marine Terminal",
+"Lamberts Point / Norfolk-USA-Pier 6 — Lamberts Point Coal Terminal",
             ),
             key="origin_pt",
         )
