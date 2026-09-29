@@ -49,7 +49,7 @@ with tab1:
             ["PRIMARY COKING COAL", "MEDIUM COKING COAL", "WEAK COKING COAL", "PCL COAL", "THERMAL COAL"],
             key="cargo_type",
         )
-        cargo_qt = st.number_input("Volume of shipment", 1000, 500000, 10000, key="cargo_qt")
+        cargo_qt = st.number_input("Volume of shipment", 1000, 80000, 10000, key="cargo_qt")
         submitted = st.form_submit_button("Submit", type="primary", disabled=False)
         if submitted:
             st.write(
